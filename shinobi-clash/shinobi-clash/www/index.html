@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>Shinobi Clash</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ctrl">
+  <div id="dpad">
+    <i class="dk u" data-d="u"></i><i class="dk l" data-d="l"></i><i class="dk r" data-d="r"></i><i class="dk d" data-d="d"></i><b class="dc"></b>
+  </div>
+  <button class="btn" id="b-atk" data-act="atk" aria-label="Taijutsu"><svg viewBox="0 0 48 48"><path d="M12 22c0-3 2-5 5-5h14c4 0 7 3 7 7v8c0 4-3 7-7 7H20c-5 0-8-4-8-8z" fill="#ffd9b0" stroke="#222" stroke-width="2.5"/><path d="M19 17v10M25 17v10M31 17v10" stroke="#222" stroke-width="2"/></svg></button>
+  <button class="btn" id="b-kun" data-act="kun" aria-label="Kunai"><svg viewBox="0 0 48 48"><g transform="rotate(-45 24 24)"><path d="M24 3l7 18-7 4-7-4z" fill="#cfd6e4" stroke="#222" stroke-width="2"/><rect x="21.5" y="25" width="5" height="14" rx="2" fill="#333" stroke="#111"/><circle cx="24" cy="42" r="4" fill="none" stroke="#ddd" stroke-width="2.5"/></g></svg></button>
+  <button class="btn" id="b-dash" data-act="dash" aria-label="Shunshin"><svg viewBox="0 0 48 48"><circle cx="30" cy="12" r="5" fill="#ffd9b0" stroke="#222" stroke-width="2"/><path d="M26 17l-8 12 8 4-3 11M18 29l-9-2M26 17l9 6M26 33l9 3" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M25 10l-14-3 11 7" fill="#e33"/></svg></button>
+  <button class="btn" id="b-ult" data-act="ult" aria-label="Rasengan"><svg viewBox="0 0 48 48"><defs><radialGradient id="rg"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#8ff0ff"/><stop offset="1" stop-color="#1c7dff"/></radialGradient></defs><circle cx="24" cy="24" r="19" fill="url(#rg)"/><path d="M24 24c4-6 12-2 10 5s-14 8-18-1" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+</div>
+<div id="rot">Rotate your device to landscape</div>
+<script src="js/audio.js"></script>
+<script src="js/vfx.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
