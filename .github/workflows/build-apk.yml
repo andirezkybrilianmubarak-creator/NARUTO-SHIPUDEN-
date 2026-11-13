@@ -1,0 +1,100 @@
+name: Build Shinobi Clash APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  CI: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Locate Project Root
+        id: locate
+        run: |
+          if [ -f "package.json" ]; then
+            echo "dir=." >> $GITHUB_OUTPUT
+          elif [ -f "shinobi-clash/package.json" ]; then
+            echo "dir=shinobi-clash" >> $GITHUB_OUTPUT
+          else
+            echo "ERROR: package.json tidak ditemukan!"
+            exit 1
+          fi
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Dependencies
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: npm install
+
+      - name: Generate Android Platform (Capacitor)
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+
+      - name: Configure Landscape & Fullscreen
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          manifest = 'android/app/src/main/AndroidManifest.xml'
+          if os.path.exists(manifest):
+              s = open(manifest, encoding='utf-8').read()
+              if 'android:screenOrientation' in s:
+                  s = re.sub(r'android:screenOrientation="[^"]*"', 'android:screenOrientation="landscape"', s)
+              else:
+                  s = s.replace('<activity', '<activity\n            android:screenOrientation="landscape"', 1)
+              open(manifest, 'w', encoding='utf-8').write(s)
+
+          styles = 'android/app/src/main/res/values/styles.xml'
+          if os.path.exists(styles):
+              t = open(styles, encoding='utf-8').read()
+              if 'windowFullscreen' not in t:
+                  t = t.replace('</style>', '        <item name="android:windowFullscreen">true</item>\n    </style>')
+              open(styles, 'w', encoding='utf-8').write(t)
+          print('AndroidManifest & styles configured successfully.')
+          PY
+
+      - name: Sync Web Assets to Android
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: npx cap sync android
+
+      - name: Grant Execute Permission on Gradlew
+        working-directory: ${{ steps.locate.outputs.dir }}
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        working-directory: ${{ steps.locate.outputs.dir }}/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shinobi-clash-debug-apk
+          path: ${{ steps.locate.outputs.dir }}/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
