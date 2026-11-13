@@ -22,14 +22,14 @@ jobs:
       - name: Locate Project Root
         id: locate
         run: |
-          if [ -f "package.json" ]; then
-            echo "dir=." >> $GITHUB_OUTPUT
-          elif [ -f "shinobi-clash/package.json" ]; then
-            echo "dir=shinobi-clash" >> $GITHUB_OUTPUT
-          else
+          PKG=$(find . -maxdepth 4 -name "package.json" ! -path "*/node_modules/*" | head -n 1)
+          if [ -z "$PKG" ]; then
             echo "ERROR: package.json tidak ditemukan!"
             exit 1
           fi
+          DIR=$(dirname "$PKG")
+          echo "Ditemukan di: $DIR"
+          echo "dir=$DIR" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
